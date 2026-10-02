@@ -120,12 +120,20 @@ public class PlayerMovment : NetworkBehaviour
         {
             PlayerJump();
         }
+        if(rigidbody.linearVelocity.x > 5 ) 
+        {
+            rigidbody.linearVelocity = new Vector2(5, rigidbody.linearVelocity.y);
+        }
+        if(rigidbody.linearVelocity.x < -5) 
+        {
+            rigidbody.linearVelocity = new Vector2(-5, rigidbody.linearVelocity.y);
+        }
     }
 
     // Function to handle player movement
     void PlayerMovement(Vector2 direction)
     {
-        rigidbody.linearVelocityX = direction.x * moveSpeed;
+        rigidbody.AddForce(new Vector2(direction.x * moveSpeed, 0), ForceMode2D.Force);
     }
 
     // Function to handle player jump
@@ -160,6 +168,14 @@ public class PlayerMovment : NetworkBehaviour
         }
 
         return false;
+    }
+
+    void CheckIfPlayersToFarApart()
+    {
+        if (GetChainLength() > chainMaxLength)
+        {
+            PlayersToFarApart();
+        }
     }
 
     float GetChainLength()
