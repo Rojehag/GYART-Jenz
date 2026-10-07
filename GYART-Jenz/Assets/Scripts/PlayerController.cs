@@ -17,6 +17,10 @@ public class PlayerMovment : NetworkBehaviour
     [SerializeField]
     float jumpForce;
 
+    bool isMoving = false;
+
+    Vector2 direction;
+
     [Header("Chain Settings")]
 
     //Sprite for the chain
@@ -24,6 +28,7 @@ public class PlayerMovment : NetworkBehaviour
     [SerializeField]
     float chainMaxLength;
 
+    
 
     //Rigidbody
     Rigidbody2D rigidbody;
@@ -41,7 +46,8 @@ public class PlayerMovment : NetworkBehaviour
         
         OnNetworkSpawn();
     }
-
+    
+    [SerializeField]
     //List of all players in the game
     public static readonly List<PlayerMovment> Players = new List<PlayerMovment>();
 
@@ -102,38 +108,52 @@ public class PlayerMovment : NetworkBehaviour
             return;
         }
 
+        PlayerMovement();
+
+
+    }
+
+    // Function to handle player movement
+    void PlayerMovement()
+    {
         // Handle player movement input
         if (Input.GetKey(KeyCode.A))
-        {       
-            PlayerMovement(new Vector2(-1, 0));
+        {
+            direction = new Vector2(-1, 0);
+            rigidbody.AddForce(new Vector2(direction.x * moveSpeed, 0), ForceMode2D.Force);
+            isMoving = true;
         }
         else if (Input.GetKey(KeyCode.D))
         {
-            PlayerMovement(new Vector2(1, 0));
+            direction = new Vector2(1, 0);
+            rigidbody.AddForce(new Vector2(direction.x * moveSpeed, 0), ForceMode2D.Force);
+            isMoving = true;
         }
         else
         {
-            PlayerMovement(new Vector2(0, 0));
+            isMoving = false;
         }
+
 
         if (Input.GetKeyDown(KeyCode.Space) && GroundCheck())
         {
             PlayerJump();
         }
-        if(rigidbody.linearVelocity.x > 5 ) 
+
+
+        if (rigidbody.linearVelocity.x > 5)
         {
             rigidbody.linearVelocity = new Vector2(5, rigidbody.linearVelocity.y);
         }
-        if(rigidbody.linearVelocity.x < -5) 
+        if (rigidbody.linearVelocity.x < -5)
         {
             rigidbody.linearVelocity = new Vector2(-5, rigidbody.linearVelocity.y);
         }
-    }
 
-    // Function to handle player movement
-    void PlayerMovement(Vector2 direction)
-    {
-        rigidbody.AddForce(new Vector2(direction.x * moveSpeed, 0), ForceMode2D.Force);
+        if (rigidbody.linearVelocity.x != 0)
+        {
+            rigidbody.AddForce(new Vector2(direction.x * -1, 0), ForceMode2D.Force);
+        }
     }
 
     // Function to handle player jump
@@ -185,12 +205,18 @@ public class PlayerMovment : NetworkBehaviour
 
     void PlayersToFarApart()
     {
+        // Handle the logic for when players are too far apart
+
+        // Tanke är att om spelarna är för långt ifrån varandra så ska det vara en kraft som stoppar dem från att röra sig längre ifrån varandra.
+        // Tanken är också att om en spelare går ifrån den andra spelaren medans den andra står still ska ha dra med sig den stillastående spelaren.
+        // Om båda spelarna rör sig ifrån varandra ska de båda sakta ner tills de är inom chainMaxLength igen.
+        // Om båda spelarna rör sig mot varandra ska de kunna röra sig fritt.
 
     }
 
     void DrawChain()
     {
-
+        // Rita upp en kedja mellan spelarna med hjälp av en LineRenderer eller liknande komponent.
     }
 
 
