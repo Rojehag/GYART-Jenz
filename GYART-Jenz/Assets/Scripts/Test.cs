@@ -184,10 +184,6 @@ public class Test : NetworkBehaviour
 
 
 
-    //Här!!
-
-
-
     // Called when the player object is spawned on the network
     public override void OnNetworkSpawn()
     {
@@ -428,6 +424,11 @@ public class Test : NetworkBehaviour
             isBeingDragged = false;
         }
     }
+
+
+    //Här
+
+
 
     float GetChainLength()
     {

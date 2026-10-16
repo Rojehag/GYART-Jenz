@@ -4,7 +4,7 @@ using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-public class PlayerMovment : NetworkBehaviour
+public class PlayerController2 : NetworkBehaviour
 {
     //Object for groundCheck
     GameObject groundCheck;
@@ -18,7 +18,7 @@ public class PlayerMovment : NetworkBehaviour
     float jumpForce = 10f;
 
 
-   
+
 
 
 
@@ -104,10 +104,10 @@ public class PlayerMovment : NetworkBehaviour
 
 
     //List of player tracking
-    
+
     [SerializeField]
     //List of all players in the game
-    public static readonly List<PlayerMovment> Players = new List<PlayerMovment>();
+    public static readonly List<PlayerController2> Players = new List<PlayerController2>();
 
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
     private static void InitStatics()
@@ -157,7 +157,7 @@ public class PlayerMovment : NetworkBehaviour
 
         SetUpLineRenderer();
 
-        if(!IsSpawned && !Players.Contains(this))
+        if (!IsSpawned && !Players.Contains(this))
         {
             Players.Add(this);
             UpdatePlayerColor(playerColor.Value);
@@ -168,10 +168,10 @@ public class PlayerMovment : NetworkBehaviour
 
     void SetUpLineRenderer()
     {
-        if(lineRenderer == null)
+        if (lineRenderer == null)
         {
             lineRenderer = gameObject.AddComponent<LineRenderer>();
-            if(lineRenderer == null)
+            if (lineRenderer == null)
             {
                 lineRenderer = gameObject.AddComponent<LineRenderer>();
             }
@@ -217,11 +217,9 @@ public class PlayerMovment : NetworkBehaviour
 
         lineRenderer.startColor = chainColor;
         lineRenderer.endColor = chainColor;
+
+
     }
-
-   
-
-   //Fortsätt här!!
 
 
 
@@ -230,6 +228,8 @@ public class PlayerMovment : NetworkBehaviour
     // Called when the player object is spawned on the network
     public override void OnNetworkSpawn()
     {
+        base.OnNetworkSpawn();
+
         // Add this player to the list of players if not already present
         if (!Players.Contains(this))
         {
@@ -242,12 +242,47 @@ public class PlayerMovment : NetworkBehaviour
         // Server assigns a random color to the player when they spawn
         if (IsServer)
         {
-            playerColor.Value = playerColors[Players.IndexOf(this)];
+            int colorIndex = Mathf.Clamp(Players.IndexOf(this), 0, playerColors.Length - 1);
+            playerColor.Value = playerColors[colorIndex];
         }
 
         // Apply initial color
         UpdatePlayerColor(playerColor.Value);
     }
+
+    public override void OnNetworkDespawn()
+    {
+        base.OnNetworkDespawn();
+
+        playerColor.OnValueChanged -= OnColorChanged;
+
+        OnDisable();
+    }
+
+    private void OnDisable()
+    {
+        if (Players.Contains(this))
+        {
+            Players.Remove(this);
+        }
+
+        if (lineRenderer != null)
+        {
+            lineRenderer.enabled = false;
+        }
+    }
+
+    public override void OnDestroy()
+    {
+        base.OnDestroy();
+        if (Players.Contains(this))
+        {
+            Players.Remove(this);
+        }
+    }
+
+
+
 
     // Called when Player's color changes
     private void OnColorChanged(Color previousColor, Color newColor)
@@ -263,6 +298,8 @@ public class PlayerMovment : NetworkBehaviour
             spriteRenderer.color = color;
         }
     }
+
+
 
 
     // Update is called once per frame
@@ -281,28 +318,61 @@ public class PlayerMovment : NetworkBehaviour
             Death();
         }
 
-        if(GetOtherPlayer() != null)
+       
+    }
+
+    private void FixedUpdate()
+    {
+        if(!IsOwner)
+        {
+            return;
+        }
+
+
+        if (GetOtherPlayer() != null)
         {
             CheckIfPlayersToFarApart();
-            DrawChain();
+
         }
     }
+
+    private void LateUpdate()
+    {
+        DrawChain();
+    }
+
 
     // Function to handle player movement
     void PlayerMovement()
     {
         // Handle player movement input
+        float moveInput = 0f;
         if (Input.GetKey(KeyCode.A))
         {
-            direction = new Vector2(-1, 0);
-            rigidbody.AddForce(new Vector2(direction.x * moveSpeed, 0), ForceMode2D.Force);
-            isMoving = true;
+            moveInput = -1f;
+
         }
         else if (Input.GetKey(KeyCode.D))
         {
-            direction = new Vector2(1, 0);
+            moveInput = 1f;
+        }
+
+        currentInputX = moveInput;
+
+        if(IsSpawned && IsOwner)
+        {
+            if(Mathf.Abs(networkInputX.Value-moveInput)> 0.01f)
+            {
+                networkInputX.Value = moveInput;
+            }
+        }
+
+        if (moveInput != 0f)
+        {
+            direction = new Vector2(moveInput, 0);
             rigidbody.AddForce(new Vector2(direction.x * moveSpeed, 0), ForceMode2D.Force);
             isMoving = true;
+
         }
         else
         {
@@ -324,6 +394,12 @@ public class PlayerMovment : NetworkBehaviour
         {
             rigidbody.linearVelocity = new Vector2(-5, rigidbody.linearVelocity.y);
         }
+
+        if(!isMoving && !isBeingDragged && Mathf.Abs(rigidbody.linearVelocity.x) > 0.05f)
+        {
+            float stopDir = -Mathf.Sign(rigidbody.linearVelocity.x);
+            rigidbody.AddForce(new Vector2(stopDir * moveSpeed * 0.5f, 0), ForceMode2D.Force);
+        }
     }
 
     // Function to handle player jump
@@ -335,6 +411,11 @@ public class PlayerMovment : NetworkBehaviour
     //Bool to check if the player is on the ground or not
     bool GroundCheck()
     {
+        if(groundCheck == null)
+        {
+            Debug.LogWarning("GroundCheck object is not assigned.");
+            return false;
+        }
         // Get the position of the groundCheck object   
         Vector2 raycastOrigin = groundCheck.transform.position;
 
@@ -342,7 +423,7 @@ public class PlayerMovment : NetworkBehaviour
         Collider2D[] hits = Physics2D.OverlapCircleAll(raycastOrigin, 0.1f);
 
         // Check if any of the colliders hit are on the ground layer (layer 3) or another player (layer 6)
-        for (int i = 0; i< hits.Length; i++)
+        for (int i = 0; i < hits.Length; i++)
         {
             // Check if the hit object is on the ground layer (layer 3)
             if (hits[i].gameObject.layer == 3)
@@ -354,11 +435,28 @@ public class PlayerMovment : NetworkBehaviour
             {
                 return true;
             }
-            
+
         }
 
         return false;
     }
+
+    public PlayerController2 GetOtherPlayer()
+    {
+        Players.RemoveAll(player => player == null); // Clean up any null references
+
+        //Both Players have to be connected for the chain to work, if not return null
+        if (Players.Count < 2)
+        {
+            return null; // Not enough players to find a partner
+        }
+
+        return Players.Find(player => player != this);
+    }
+
+
+    //Här
+
 
     void CheckIfPlayersToFarApart()
     {
@@ -373,23 +471,13 @@ public class PlayerMovment : NetworkBehaviour
         return Vector2.Distance(transform.position, GetOtherPlayer().transform.position);
     }
 
-    PlayerMovment GetOtherPlayer()
-    {
-        foreach (var player in Players)
-        {
-            if (player != this)
-            {
-                return player;
-            }
-        }
-        return null;
-    }
+  
 
     void PlayersToFarApart()
     {
         // Handle the logic for when players are too far apart
 
-        PlayerMovment other = GetOtherPlayer();
+        PlayerController2 other = GetOtherPlayer();
         if (other == null || rigidbody == null)
         {
             isBeingDragged = false;
@@ -514,3 +602,5 @@ public class PlayerMovment : NetworkBehaviour
         transform.position = respawnPoint.transform.position;
     }
 }
+
+
