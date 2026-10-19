@@ -104,10 +104,9 @@ GameObject:
   - component: {fileID: 5833905382199353170}
   - component: {fileID: 7201210627383595612}
   - component: {fileID: 1472818440175393922}
-  - component: {fileID: 1152794839496145361}
   - component: {fileID: 4535470055667225932}
   - component: {fileID: 8862187302763234892}
-  - component: {fileID: -5209643632125074138}
+  - component: {fileID: 5786841821774997514}
   m_Layer: 6
   m_Name: Player
   m_TagString: Untagged
@@ -208,7 +207,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Unity.Netcode.Runtime::Unity.Netcode.NetworkObject
-  GlobalObjectIdHash: 123051381
+  GlobalObjectIdHash: 2931665094
   InScenePlacedSourceGlobalObjectIdHash: 2931665094
   m_InScenePlacedDisabledByDefault: 0
   DeferredDespawnTick: 0
@@ -223,27 +222,6 @@ MonoBehaviour:
   AutoObjectParentSync: 1
   SyncOwnerTransformWhenParented: 1
   AllowOwnerToParent: 0
---- !u!114 &1152794839496145361
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3279569990425386392}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9aa0bb89a8e5ec14fb54d1cf03332056, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::PlayerMovment
-  ShowTopMostFoldoutHeaderGroup: 1
-  moveSpeed: 5
-  jumpForce: 10
-  chainMaxLength: 15
-  dragSpeedMultiplier: 1.5
-  maxOverstretch: 3
-  chainPullStrength: 0.3
-  chainDamping: 0.5
-  playerIsDead: 0
 --- !u!114 &4535470055667225932
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -400,7 +378,7 @@ LineRenderer:
   m_UseWorldSpace: 1
   m_Loop: 0
   m_ApplyActiveColorSpace: 1
---- !u!114 &-5209643632125074138
+--- !u!114 &5786841821774997514
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -409,24 +387,25 @@ MonoBehaviour:
   m_GameObject: {fileID: 3279569990425386392}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3e6ee85b39e8f9b49ad439edad321eae, type: 3}
+  m_Script: {fileID: 11500000, guid: 156ca5d22ddef5b4b9e6bbb9f596a76f, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Test
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerController2
   ShowTopMostFoldoutHeaderGroup: 1
   moveSpeed: 5
   jumpForce: 10
   chainMaxLength: 6
+  maxOverstretch: 0.4
   chainPullStrength: 40
   chainDamping: 8
-  maxOverstretch: 0.4
   dragSpeedMultiplier: 1
   chainSprite: {fileID: 0}
   lineRenderer: {fileID: 0}
+  chainWidth: 0.1
+  chainSegments: 10
   chainMaterial: {fileID: 0}
   chainColor: {r: 0.75, g: 0.75, b: 0.8, a: 1}
   chainTautColor: {r: 1, g: 0.35, b: 0.35, a: 1}
-  chainWidth: 0.15
-  chainSegments: 14
+  playerIsDead: 0
 --- !u!1 &6898171621696453921
 GameObject:
   m_ObjectHideFlags: 0

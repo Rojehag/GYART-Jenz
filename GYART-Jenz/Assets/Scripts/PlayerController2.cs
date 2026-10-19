@@ -455,23 +455,43 @@ public class PlayerController2 : NetworkBehaviour
     }
 
 
-    //Här
+
 
 
     void CheckIfPlayersToFarApart()
     {
-        if (GetChainLength() > chainMaxLength)
+        PlayerController2 otherPlayer = GetOtherPlayer();
+        if (otherPlayer == null)
+        {
+            isBeingDragged = false;
+            return;
+        }
+
+
+        if (GetChainLength() >= chainMaxLength)
         {
             PlayersToFarApart();
+        }
+        else 
+        {
+            isBeingDragged = false;
         }
     }
 
     float GetChainLength()
     {
+        PlayerController2 other = GetOtherPlayer();
+        if(other == null)
+        {
+            return 0f;
+        }
+
         return Vector2.Distance(transform.position, GetOtherPlayer().transform.position);
     }
 
-  
+    
+
+
 
     void PlayersToFarApart()
     {
@@ -592,14 +612,62 @@ public class PlayerController2 : NetworkBehaviour
 
     void DrawChain()
     {
-        LineRenderer lineRenderer = GetComponent<LineRenderer>();
-        lineRenderer.SetPositions(new Vector3[] { transform.position, GetOtherPlayer().transform.position });
+        if(lineRenderer == null)
+        {
+            return;
+        }
+
+        if (!IsOwner)
+        {
+            lineRenderer.enabled = false;
+            return;
+        }
+
+        PlayerController2 other = GetOtherPlayer();
+        if(other == null)
+        {
+            lineRenderer.enabled = false;
+            return;
+        }
+
+        lineRenderer.enabled = true;
+
+        Vector3 p0 = transform.position;
+        Vector3 p1 = other.transform.position;
+        float distance = Vector3.Distance(p0, p1);
+
+        Color currentColor = (distance >= chainMaxLength) ? chainTautColor : chainColor;
+        lineRenderer.startColor = currentColor;
+        lineRenderer.endColor = currentColor;
+
+        float slack = Mathf.Max(0f, chainMaxLength - distance);
+        float sag = Mathf.Min(slack * 0.35f, 1.5f);
+
+        int count = Mathf.Max(2, chainSegments);
+        if(lineRenderer.positionCount != count)
+        {
+            lineRenderer.positionCount = count;
+        }
+
+        for(int i = 0; i < count; i++)
+        {
+            float t = (float)i / (count - 1);
+            Vector3 pt = Vector3.Lerp(p0, p1, t);
+
+            pt.y -= sag * 4f * t * (1f - t);
+            lineRenderer.SetPosition(i, pt);
+        }
     }
 
 
     void Death()
     {
-        transform.position = respawnPoint.transform.position;
+        PlayerController2 other = GetOtherPlayer();
+        if(other != null)
+        {
+            transform.position = respawnPoint.transform.position;
+            other.transform.position = respawnPoint.transform.position;
+        }
     }
 }
 
