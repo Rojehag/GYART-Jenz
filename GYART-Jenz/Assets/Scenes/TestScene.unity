@@ -1436,6 +1436,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Main Camera
       objectReference: {fileID: 0}
+    - target: {fileID: 3227746453130270914, guid: cd60c9ef739f7584980b5b570fc2fa0e, type: 3}
+      propertyPath: shakingDistance
+      value: 0.2
+      objectReference: {fileID: 0}
     - target: {fileID: 4185336402128749530, guid: cd60c9ef739f7584980b5b570fc2fa0e, type: 3}
       propertyPath: m_LocalPosition.x
       value: -3.26852
@@ -1446,7 +1450,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4185336402128749530, guid: cd60c9ef739f7584980b5b570fc2fa0e, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 0
+      value: -10
       objectReference: {fileID: 0}
     - target: {fileID: 4185336402128749530, guid: cd60c9ef739f7584980b5b570fc2fa0e, type: 3}
       propertyPath: m_LocalRotation.w
@@ -1484,36 +1488,11 @@ PrefabInstance:
       propertyPath: GlobalObjectIdHash
       value: 2257550619
       objectReference: {fileID: 0}
-    - target: {fileID: 4917091237947805812, guid: cd60c9ef739f7584980b5b570fc2fa0e, type: 3}
-      propertyPath: InScenePlacedSourceGlobalObjectIdHash
-      value: 3615623788
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 3152444764258595864, guid: cd60c9ef739f7584980b5b570fc2fa0e, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 1446520434}
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: cd60c9ef739f7584980b5b570fc2fa0e, type: 3}
---- !u!1 &1446520433 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 3152444764258595864, guid: cd60c9ef739f7584980b5b570fc2fa0e, type: 3}
-  m_PrefabInstance: {fileID: 1371212361}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &1446520434
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1446520433}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ffadf434e7e7c624c9ef7032165ab3e1, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::CameraMovment
-  ShowTopMostFoldoutHeaderGroup: 1
 --- !u!1 &1610301610
 GameObject:
   m_ObjectHideFlags: 0

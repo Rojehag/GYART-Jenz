@@ -170,7 +170,7 @@ public class PlayerController2 : NetworkBehaviour
     {
         if (lineRenderer == null)
         {
-            lineRenderer = gameObject.AddComponent<LineRenderer>();
+            lineRenderer = gameObject.GetComponent<LineRenderer>();
             if (lineRenderer == null)
             {
                 lineRenderer = gameObject.AddComponent<LineRenderer>();
